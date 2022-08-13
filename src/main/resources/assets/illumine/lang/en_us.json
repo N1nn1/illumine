@@ -1,4 +1,8 @@
 {
   "itemGroup.illumine.item_group": "Illumine",
-  "item.illumine.illumine": "Illumine"
+  "item.illumine.illumine": "Illumine",
+
+  "item.illumine.firefly_bottle": "Firefly Bottle",
+
+  "block.illumine.firefly_lantern": "Firefly Lantern"
 }
