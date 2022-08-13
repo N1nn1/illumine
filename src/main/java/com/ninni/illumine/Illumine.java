@@ -7,6 +7,5 @@ public class Illumine implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		System.out.println("Hello world!");
 	}
 }
