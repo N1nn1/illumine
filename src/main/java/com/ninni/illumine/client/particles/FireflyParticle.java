@@ -10,12 +10,10 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 @Environment(EnvType.CLIENT)
 public class FireflyParticle extends AnimatedParticle {
@@ -28,7 +26,7 @@ public class FireflyParticle extends AnimatedParticle {
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
         this.scale *= 2.0F;
-        this.maxAge = 1200;
+        this.maxAge = world.getRandom().nextInt(60) + 20;
         this.litTicks = 240;
         this.setSpriteForAge(spriteProvider);
     }
@@ -49,13 +47,11 @@ public class FireflyParticle extends AnimatedParticle {
             }
         }
         if (this.lock && this.litTicks >= 0) {
-            this.litTicks++;
             this.litTicks+=30;
             if (this.litTicks == 240) {
                 this.lock = false;
             }
         }
-        this.world.getPlayers().forEach(player -> player.sendMessage(Text.translatable("The lit ticks are " + this.litTicks)));
     }
 
     @Override
@@ -87,7 +83,6 @@ public class FireflyParticle extends AnimatedParticle {
         float n = this.getMinV();
         float o = this.getMaxV();
         int p = this.litTicks;
-        System.out.println(p);
         vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(m, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
         vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(m, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
         vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
