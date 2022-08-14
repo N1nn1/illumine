@@ -4,7 +4,9 @@ import com.ninni.illumine.client.IllumineParticles;
 import com.ninni.illumine.entity.ai.FlyAroundGoal;
 import com.ninni.illumine.item.IllumineItems;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -31,9 +33,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class FireflyEntity extends PathAwareEntity {
     private static final TrackedData<Integer> COUNT = DataTracker.registerData(FireflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -43,10 +47,17 @@ public class FireflyEntity extends PathAwareEntity {
         this.moveControl = new FlightMoveControl(this, 20, true);
     }
 
+    @Nullable
+    @Override
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        this.setCount(random.nextBetween(1,3));
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    }
+
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(COUNT, 3);
+        this.dataTracker.startTracking(COUNT, 1);
     }
 
     @Override
@@ -98,6 +109,16 @@ public class FireflyEntity extends PathAwareEntity {
     }
 
     @Override
+    public boolean doesNotCollide(double offsetX, double offsetY, double offsetZ) {
+        return true;
+    }
+
+    @Override
+    protected void knockback(LivingEntity target) {
+        target.takeKnockback(0, this.getX(), this.getZ());
+    }
+
+    @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         if (stack.isOf(Items.GLASS_BOTTLE) && this.getCount() > 0) {
@@ -106,12 +127,17 @@ public class FireflyEntity extends PathAwareEntity {
                 this.setCount(this.getCount() - 1);
                 this.emitGameEvent(GameEvent.ENTITY_INTERACT);
                 player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(IllumineItems.FIREFLY_BOTTLE)));
-                if (this.getCount() == 0) {
-                    this.discard();
-                }
+                if (this.getCount() == 0) this.discard();
             }
             return ActionResult.SUCCESS;
         }
+        if (stack.isOf(IllumineItems.FIREFLY_BOTTLE) && this.getCount() < 3 && !this.world.isClient()) {
+            this.setCount(this.getCount() + 1);
+            this.emitGameEvent(GameEvent.ENTITY_INTERACT);
+            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+            this.world.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        }
+
         return super.interactMob(player, hand);
     }
 
@@ -119,14 +145,18 @@ public class FireflyEntity extends PathAwareEntity {
     public void tick() {
         super.tick();
         if (this.isAlive()) {
+            int count = this.getCount();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            int i1 = 1;
-            mutable.set(this.getX() + MathHelper.nextInt(random, -i1, i1), this.getBlockPos().getY(), this.getZ() + MathHelper.nextInt(random, -i1, i1));
-            for (int i = 0; i < this.getCount(); i++) {
-                if (this.random.nextFloat() < 0.85F) {
-                    world.addParticle(IllumineParticles.FIREFLY, mutable.getX() + random.nextDouble(), this.getY() + random.nextDouble(), mutable.getZ() + random.nextDouble(), 0, 0, 0);
-                }
-            }
+            float width = 0;
+            if (count == 3) width = 2;
+            if (count == 2) width = 1.5F;
+            if (count == 1) width = 1;
+            mutable.set(this.getX() + MathHelper.nextBetween(random, -width, width), this.getBlockPos().getY(), this.getZ() + MathHelper.nextBetween(random, -width, width));
+            Random random = this.getWorld().random;
+            double j = random.nextGaussian() * 0.025;
+            double k = random.nextGaussian() * 0.025;
+            double l = random.nextGaussian() * 0.025;
+            for (int i = 0; i < count; i++) if (this.random.nextFloat() < 0.1F) world.addParticle(IllumineParticles.FIREFLY, mutable.getX() + random.nextDouble(), this.getY() + random.nextDouble(), mutable.getZ() + random.nextDouble(), j, k, l);
         }
     }
 

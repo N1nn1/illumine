@@ -30,15 +30,16 @@ public class FireflyBottleItem extends Item {
         PlayerEntity playerEntity = context.getPlayer();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         ItemStack stack = context.getStack();
+
         if (world instanceof ServerWorld serverWorld) {
             if (!playerEntity.getAbilities().creativeMode) {
                 stack.decrement(1);
             }
             if (!playerEntity.getInventory().insertStack(new ItemStack(Items.GLASS_BOTTLE))) {
-                playerEntity.dropItem(new ItemStack(Items.GLASS_BOTTLE), false);
+                playerEntity.giveItemStack(new ItemStack(Items.GLASS_BOTTLE));
             }
             FireflyEntity fireflyEntity = IllumineEntities.FIREFLY.create(world);
-            fireflyEntity.setPos(blockPos.getX() + 0.5, blockPos.getY(), blockPos.getZ() + 0.5);
+            fireflyEntity.setPos(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
             fireflyEntity.setCount(1);
             world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.NEUTRAL, 1.0F, 1.0F);
             serverWorld.spawnEntityAndPassengers(fireflyEntity);

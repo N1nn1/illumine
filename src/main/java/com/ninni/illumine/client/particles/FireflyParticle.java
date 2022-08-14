@@ -25,9 +25,10 @@ public class FireflyParticle extends AnimatedParticle {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
-        this.scale *= 2.0F;
+        this.scale *= 1.5F;
         this.maxAge = world.getRandom().nextInt(60) + 20;
         this.litTicks = 240;
+        this.collidesWithWorld = true;
         this.setSpriteForAge(spriteProvider);
     }
 

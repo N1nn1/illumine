@@ -24,7 +24,7 @@ public class IllumineEntities {
                     .defaultAttributes(FireflyEntity::createFireflyAttributes)
                     .spawnGroup(SpawnGroup.CREATURE)
                     .spawnRestriction(SpawnRestriction.Location.ON_GROUND, Heightmap.Type.WORLD_SURFACE_WG, FireflyEntity::canSpawn)
-                    .dimensions(EntityDimensions.changing(1.0F, 1.2F))
+                    .dimensions(EntityDimensions.changing(1F, 1F))
                     .trackRangeBlocks(8),
             new int[]{ 5120804, 15204180 }
     );
