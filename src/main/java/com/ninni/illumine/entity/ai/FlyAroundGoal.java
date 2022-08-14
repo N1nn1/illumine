@@ -38,11 +38,7 @@ public class FlyAroundGoal extends Goal {
 
     @Nullable
     private Vec3d getRandomLocation() {
-        Vec3d vec3d2 = this.fireflyEntity.getRotationVec(0.0F);
-        Vec3d vec3d3 = AboveGroundTargeting.find(this.fireflyEntity, 8, 7, vec3d2.x, vec3d2.z, 1.5707964f, 3, 1);
-        if (vec3d3 != null) {
-            return vec3d3;
-        }
-        return NoPenaltySolidTargeting.find(this.fireflyEntity, 8, 4, -2, vec3d2.x, vec3d2.z, 1.5707963705062866);
+        Vec3d vec3 = this.fireflyEntity.getRotationVec(0.0f);
+        return NoPenaltySolidTargeting.find(this.fireflyEntity, 10, 7, -2, vec3.x, vec3.z, 1.5707963705062866);
     }
 }

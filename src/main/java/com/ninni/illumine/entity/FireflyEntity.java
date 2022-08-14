@@ -147,10 +147,7 @@ public class FireflyEntity extends PathAwareEntity {
         if (this.isAlive()) {
             int count = this.getCount();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            float width = 0;
-            if (count == 3) width = 2;
-            if (count == 2) width = 1.5F;
-            if (count == 1) width = 1;
+            float width = 1 + (count - 1) * 0.5F;
             mutable.set(this.getX() + MathHelper.nextBetween(random, -width, width), this.getBlockPos().getY(), this.getZ() + MathHelper.nextBetween(random, -width, width));
             Random random = this.getWorld().random;
             double j = random.nextGaussian() * 0.025;
